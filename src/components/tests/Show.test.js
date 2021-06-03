@@ -29,13 +29,31 @@ test("renders Loading component when prop show is null", () => {
 
 test("renders same number of options seasons are passed in", () => {
   render(<Show show={testShow} selectedSeason={"none"} />);
-  const seasonsCount = screen.getAllByTestId("season-option");
-  expect(seasonsTotal).toHaveLength(2);
+  const seasonCount = screen.getAllByTestId("season-option");
+  expect(seasonCount).toHaveLength(4);
 });
 
-test("handleSelect is called when an season is selected", () => {});
+test("handleSelect is called when an season is selected", () => {
+  const handleSelect = jest.fn();
+  render(
+    <Show show={testShow} selectedSeason={"none"} handleSelect={handleSelect} />
+  );
+  const season = screen.getByLabelText(/select a season/i);
+  userEvent.selectOptions(season, ["2"]);
+  expect(handleSelect).toBeCalled();
+});
 
-test("component renders when no seasons are selected and when rerenders with a season passed in", () => {});
+test("component renders when no seasons are selected and when rerenders with a season passed in", () => {
+  const { rerender } = render(<Show show={testShow} selectedSeason={"none"} />);
+  let episodes = screen.queryByTestId("episodes-container");
+  expect(episodes).not.toBeInTheDocument();
+  expect(episodes).toBeNull();
+
+  rerender(<Show show={testShow} selectedSeason={"2"} />);
+  episodes = screen.queryByTestId("episodes-container");
+  expect(episodes).toBeInTheDocument();
+  expect(episodes).not.toBeNull();
+});
 
 //Tasks:
 //1. Build an example data structure that contains the show data in the correct format. A show should contain a name, a summary and an array of seasons, each with a id, name and (empty) list of episodes within them. Use console.logs within the client code if you need to to verify the structure of show data.
